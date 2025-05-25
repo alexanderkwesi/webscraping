@@ -13,15 +13,13 @@ from bleach.css_sanitizer import CSSSanitizer
 import tinycss2
 
 # Configure Flask app
-app = Flask(
-    __name__,
-    static_url_path="/static",
-    static_folder='static',
-    template_folder='template'
-)
+from flask import Blueprint, render_template
 
-app.secret_key = "Alexander Oluwaseun Kwesi"
-CORS(app)
+main = Blueprint('main', __name__)
+
+
+main.secret_key = "Alexander Oluwaseun Kwesi"
+CORS(main)
 
 # Suppress multiprocessing resource tracker warnings
 warnings.filterwarnings("ignore", category=UserWarning, message="resource_tracker:.*")
@@ -40,7 +38,7 @@ def worker(sem):
     print("Worker: Done.")
 
 # Scraping endpoint
-@app.route('/scrapes', methods=['POST'])
+@main.route('/scrapes', methods=['POST'])
 def scrapes():
     if request.method == 'POST':
 
@@ -108,14 +106,4 @@ def scrapes():
             }), 500
 
 
-if __name__ == '__main__':
-    # Use 'spawn' on platforms like Windows; 'fork' is okay on UNIX.
-    if os.name != 'nt':
-        multiprocessing.set_start_method("fork", force=True)
 
-    sem = multiprocessing.Semaphore(1)
-    process = multiprocessing.Process(target=worker, args=(sem,))
-    process.start()
-    process.join()
-
-    app.run(debug=True, host='127.0.0.1', port=5000)
