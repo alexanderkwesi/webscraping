@@ -3,7 +3,6 @@ from app import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
     # Use 'spawn' on platforms like Windows; 'fork' is okay on UNIX.
     if os.name != 'nt':
         multiprocessing.set_start_method("fork", force=True)
